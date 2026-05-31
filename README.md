@@ -1,4 +1,4 @@
-# Sistema de Controle de Missão em Tempo Real
+# Global Solution - Fiap
 
 ## Equipe
 
@@ -21,7 +21,7 @@ O sistema faz uso estratégico de diversas estruturas de dados para otimizar o a
 
 *   **Dicionários para `dados`, `organizados`, `situacao` e `modulos`/`sensores`:** Amplamente utilizados para estruturar os dados de forma hierárquica e permitir acesso rápido por chaves nomeadas. Isso é fundamental para organizar informações complexas como o estado dos módulos, leituras de sensores e a hierarquia da missão (energia, habitat).
 
-*   **Listas para Séries de Dados:** Dentro dos dicionários, listas são usadas para armazenar sequências de valores ao longo do tempo, como `energiaRest(%`, `energiaGerada(Kw/h)`, `tempInterna(°C)`, etc. Isso permite a análise de tendências e a aplicação de técnicas de previsão.
+*   **Listas para Séries de Dados:** Dentro dos dicionários, listas são usadas para armazenar sequências de valores ao longo do tempo, como `energiaRest(%)`, `energiaGerada(Kw/h)`, `tempInterna(°C)`, etc. Isso permite a análise de tendências e a aplicação de técnicas de previsão.
 
 ## Regras Lógicas Principais do Diagnóstico
 
