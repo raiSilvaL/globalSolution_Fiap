@@ -1,0 +1,85 @@
+# Relatório Técnico: Sistema de Controle de Missão Espacial
+
+## 1. Introdução
+
+Este relatório técnico detalha a análise, estruturas, lógica, previsão e decisões técnicas empregadas no projeto "Global Solution - Fiap", um sistema de controle de missão em tempo real. O objetivo principal do sistema é monitorar e diagnosticar o estado operacional de uma estação espacial ou base remota, identificando situações críticas, gerando alertas automáticos e fornecendo recomendações de ação para garantir a segurança e eficiência das operações [1].
+
+## 2. Análise do Problema e Cenário
+
+O sistema foi desenvolvido para abordar o desafio de monitorar continuamente múltiplos parâmetros de telemetria de uma estação espacial, como níveis de energia, temperaturas, radiação e status de módulos. A complexidade reside na necessidade de processar esses dados em tempo real, aplicar regras de negócio para diagnosticar o estado da missão e reagir proativamente a eventos adversos. O cenário simulado envolve a coleta de dados de telemetria que podem indicar desde condições operacionais normais até situações de alerta e estados críticos que exigem intervenção imediata.
+
+Para facilitar o desenvolvimento e teste, um simulador de dados (`simuladorDados.py`) foi criado para gerar um arquivo `dados.csv` com informações de telemetria fictícias. Este simulador permite a criação de cenários variados, incluindo falhas de módulos, níveis críticos de energia e radiação elevada, o que é fundamental para validar o comportamento do sistema de controle de missão [2].
+
+## 3. Estruturas de Dados
+
+A escolha das estruturas de dados foi crucial para otimizar o armazenamento, acesso e processamento das informações de telemetria. O sistema emprega uma combinação de estruturas Python nativas e da biblioteca `collections`:
+
+| Estrutura de Dados | Propósito | Justificativa | Implementação |
+| :----------------- | :-------- | :------------ | :------------ |
+| `deque` (Fila de Duas Pontas) | Gerenciamento de alertas dinâmicos (`fila_alertas_sistema`). | Garante processamento FIFO (First-In, First-Out), ideal para exibição sequencial de notificações na ordem em que ocorrem ou são priorizadas. | `from collections import deque` |
+| Lista (simulando Pilha) | Registro de últimos eventos críticos (`pilha_eventos_criticos`). | Funcionalidade LIFO (Last-In, First-Out) permite acesso rápido ao evento crítico mais recente, essencial para investigações pós-incidente. | Lista Python padrão (`[]`) |
+| Lista de Listas (Matriz) | Armazenamento do histórico completo de leituras de telemetria (`matriz_historico`). | Eficiente para representar dados tabulares, facilitando a recuperação de séries temporais e análise de tendências. | Lista Python padrão (`[[]]`) |
+| Dicionários | Estruturação hierárquica de dados (`dados`, `organizados`, `situacao`, `modulos`, `sensores`). | Permitem acesso rápido por chaves nomeadas, organizando informações complexas como estado de módulos, leituras de sensores e hierarquia da missão (energia, habitat). | Dicionário Python padrão (`{}`) |
+| Listas | Armazenamento de séries de dados dentro de dicionários (ex: `energiaRest(%)`, `energiaGerada(Kw/h)`). | Permitem a análise de tendências e a aplicação de técnicas de previsão sobre sequências de valores ao longo do tempo. | Lista Python padrão (`[]`) |
+
+## 4. Lógica de Diagnóstico
+
+O coração do sistema reside na função `classificarMissao`, que avalia o estado geral da missão com base em regras lógicas bem definidas. A classificação é dividida em três estados: **CRÍTICO**, **ALERTA** e **NORMAL**.
+
+### 4.1. Estado Crítico
+
+Um estado **crítico** é determinado pela seguinte expressão booleana [1]:
+
+```python
+is_critico = (falhas_criticas >= 1) or (sensores["energiaRestante"] < 20) or (sensores["radiacao"] > 13.0)
+```
+
+**Explicação:**
+*   `falhas_criticas >= 1`: Se houver falha em pelo menos um dos módulos críticos (suporte de vida, energia, habitação), a missão é considerada crítica.
+*   `sensores["energiaRestante"] < 20`: Se a energia restante cair abaixo de 20%, um nível perigosamente baixo, a missão entra em estado crítico.
+*   `sensores["radiacao"] > 13.0`: Níveis de radiação acima de 13.0 mSv são considerados perigosos e elevam o status da missão para crítico.
+
+### 4.2. Estado de Alerta
+
+Um estado de **alerta** é determinado pela seguinte lógica [1]:
+
+```python
+is_alerta = (not is_critico) and (sum(modulos.values()) < len(modulos) or sensores["energiaRestante"] < 40)
+```
+
+**Explicação:**
+*   `not is_critico`: O sistema só pode estar em alerta se não estiver em estado crítico.
+*   `sum(modulos.values()) < len(modulos)`: Indica que nem todos os módulos estão operacionais (algum módulo está com falha, mas não é um dos críticos que causaria um estado crítico geral).
+*   `sensores["energiaRestante"] < 40`: Se a energia restante estiver abaixo de 40% (mas não abaixo de 20%), é um sinal de atenção que justifica um alerta.
+
+### 4.3. Estado Normal
+
+Caso nenhuma das condições acima seja verdadeira, o sistema é classificado como **NORMAL**.
+
+## 5. Técnica de Previsão
+
+O sistema emprega uma técnica de **média móvel com ajuste de tendência** para prever o comportamento da `energiaRestante`. A função `realizarPrevisao` calcula a média dos últimos `janela` (padrão 3) pontos de dados e adiciona a tendência observada entre os dois últimos pontos para projetar o próximo valor [1].
+
+Esta previsão influencia diretamente a geração de alertas, onde um alerta é gerado se a energia prevista for menor que a energia atual, indicando uma tendência de queda. A previsão é apresentada na interface de saída como: `Energia Restante: XX% (Previsto: YY%)`.
+
+## 6. Decisões Técnicas e Implementação
+
+### 6.1. Arquitetura do Sistema
+
+A arquitetura do sistema é modular e baseada em Python, dividida em dois componentes principais: o simulador de dados (`simuladorDados.py`) e o sistema de controle de missão (`sistema.py`). Essa separação permite testar o sistema de diagnóstico com diferentes conjuntos de dados simulados, facilitando a validação e a depuração.
+
+### 6.2. Processamento de Dados
+
+O sistema utiliza arquivos CSV como fonte de dados, o que é uma decisão prática para cenários de simulação e demonstração. A função `lerDados` é responsável por carregar esses dados, enquanto `organizarDados` os estrutura em dicionários aninhados para facilitar o acesso e a manipulação. Uma observação importante é que a coluna `capEnergia(Kw/h)` está presente no `dados.csv` mas não é utilizada nas funções de organização e diagnóstico do `sistema.py`, indicando uma possível oportunidade de melhoria ou uma decisão de escopo para o projeto atual [3].
+
+### 6.3. Interface e Visualização
+
+A interface de saída é baseada em terminal, utilizando cores ANSI para destacar informações críticas, alertas e estados normais. Essa abordagem, embora simples, é eficaz para fornecer feedback visual imediato sobre o status da missão. As recomendações e alertas são apresentados de forma clara e priorizada, facilitando a tomada de decisão por parte do operador.
+
+### 6.4. Gerenciamento de Eventos e Alertas
+
+O sistema gerencia alertas e eventos críticos de forma distinta. A `fila_alertas_sistema` (deque) armazena alertas dinâmicos para processamento sequencial, enquanto a `pilha_eventos_criticos` (lista como pilha) registra os últimos eventos críticos, permitindo uma rápida revisão dos incidentes mais recentes. Essa dualidade é uma decisão técnica acertada para lidar com diferentes granularidades de informações de eventos.
+
+## 7. Conclusões e Aprendizados
+
+O projeto "Global Solution - Fiap" demonstra uma aplicação prática e eficaz de conceitos fundamentais de programação e estruturas de dados para resolver um problema complexo de monitoramento e controle. Os principais aprendizados incluem a importância da escolha correta das estruturas de dados para otimizar desempenho, o desenvolvimento de lógica condicional robusta para diagnósticos precisos e a integração de técnicas de análise e previsão de dados para adicionar inteligência preditiva ao sistema. A solução final é um exemplo da capacidade de construir sistemas confiáveis para cenários de alta exigência utilizando Python [1].
