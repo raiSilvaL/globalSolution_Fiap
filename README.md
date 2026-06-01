@@ -53,7 +53,7 @@ Caso nenhuma das condições acima seja verdadeira, o sistema é classificado co
 
 ## Técnica de Previsão Utilizada e Resultado
 
-O sistema emprega uma técnica de **média móvel com ajuste de tendência** para prever o comportamento da `energiaRestante`. A função `realizarPrevisao` calcula a média dos últimos `janela` (padrão 3) pontos de dados e adiciona a tendência observada entre os dois últimos pontos para projetar o próximo valor.
+O sistema emprega uma técnica de **média móvel com ajuste de tendência** para prever o comportamento da `energiaRestante`. A função `realizarPrevisao` calcula a média dos últimos pontos de dados e adiciona a tendência observada entre os dois últimos pontos para projetar o próximo valor.
 
 **Exemplo de Resultado:**
 
@@ -101,56 +101,107 @@ Este comando criará ou sobrescreverá o arquivo `dados.csv` na pasta `data/`, q
 **Entrada (Exemplo de `data/dados.csv`):**
 
 ```csv
-dateTime,energiaRest(%),energiaGerada(Kw/h),tempInterna(°C),tempExterna(°C),nivelRadiacao(mSv),velVento(m/s),modComunicacao,modHabitacao,modLaboratorio,modArmazenamento,modEnergia,modSupVida,qldComunicacao,logEventos
-2026-05-31 10:00:00,32,2500,22,5,10,8,1,1,1,1,1,1,Estavel,
-2026-05-31 10:00:00,32,2500,22,5,10,8,1,1,1,1,1,1,Estavel,"[]"
-2026-05-31 10:05:00,18,2000,25,7,15,10,0,1,1,1,1,1,Instavel,"[""Falha no Modulo de Comunicacao"", ""Radiacao Elevada"", ""Energia Critica"" ]"
+dateTime,modComunicacao,modHabitacao,modLaboratorio,modArmazenamento,modEnergia,modSupVida,capEnergia(Kw/h),energiaRest(%),energiaGerada(Kw/h),tempExterna(°C),tempInterna(°C),nivelRadiacao(mSv),qldComunicacao,velVento(m/s),logEventos
+2025-01-06 04:18:00,1,1,1,1,1,1,164015.58,89,1819.79,-47.0,21.0,7.894,Estavel,16.3,['Geração de energia baixa', 'Temperatura externa fora dos padrões', 'Vento forte detectado']
+2025-01-09 14:23:00,1,1,1,0,0,0,214141.79,57,3195.7,34.0,28.1,6.385,Estavel,19.6,['Falha no sistema de armazenamento', 'Falha no sistema de energia', 'Falha no sistema de suporte à vida', 'Vento forte detectado']
+2025-01-14 21:14:00,1,0,1,1,1,1,144170.6,95,2263.51,-39.4,29.6,18.228,Estavel,6.5,['Falha no sistema de habitação', 'Geração de energia baixa', 'Temperatura externa fora dos padrões', 'Nível de radiação elevado']
+2025-01-22 00:06:00,1,1,1,1,1,1,198169.56,16,3447.45,-45.3,15.1,14.08,Estavel,6.8,['Nível de energia crítica', 'Temperatura externa fora dos padrões', 'Nível de radiação elevado']
+2025-01-23 17:41:00,1,1,1,1,1,1,160899.0,30,4767.58,-27.1,17.5,7.565,Estavel,19.0,['Temperatura externa fora dos padrões', 'Vento forte detectado']
+2025-01-27 21:56:00,0,0,1,0,1,1,173618.69,15,4696.67,0.6,29.7,1.976,Estavel,11.0,['Falha no sistema de comunicação', 'Falha no sistema de habitação', 'Falha no sistema de armazenamento', 'Nível de energia crítica', 'Vento forte detectado']
+2025-02-03 17:12:00,1,1,1,0,1,1,133165.03,54,1744.65,-40.5,21.8,6.341,Estavel,4.2,['Falha no sistema de armazenamento', 'Geração de energia baixa', 'Temperatura externa fora dos padrões']
+2025-02-09 03:39:00,0,1,0,1,1,1,128077.23,66,2774.3,3.7,23.6,14.594,Estavel,2.7,['Falha no sistema de comunicação', 'Falha no sistema de laboratório', 'Geração de energia baixa', 'Nível de radiação elevado']
+2025-02-16 21:26:00,1,1,1,0,1,0,107957.94,27,1153.09,39.9,16.1,8.366,Instavel,12.8,['Falha no sistema de armazenamento', 'Falha no sistema de suporte à vida', 'Geração de energia baixa', 'Vento forte detectado', 'Sistema de comunicação instável']
+2025-02-17 11:21:00,1,0,1,1,1,1,144485.08,51,2964.71,38.8,24.5,17.852,Estavel,13.5,['Falha no sistema de habitação', 'Nível de radiação elevado', 'Vento forte detectado']
+2025-02-21 07:24:00,0,1,1,0,1,1,113829.37,40,4026.25,16.4,15.0,15.195,Estavel,18.4,['Falha no sistema de comunicação', 'Falha no sistema de armazenamento', 'Nível de radiação elevado', 'Vento forte detectado']
+2025-02-25 14:29:00,1,1,1,1,0,1,209317.98,29,3179.48,0.4,21.6,8.227,Estavel,8.6,['Falha no sistema de energia']
+2025-02-27 03:39:00,0,1,1,1,1,1,161893.99,59,4555.23,40.3,15.7,8.492,Instavel,16.8,['Falha no sistema de comunicação', 'Temperatura externa fora dos padrões', 'Vento forte detectado', 'Sistema de comunicação instável']
+2025-03-04 04:10:00,0,1,1,1,1,0,161421.86,43,2189.05,-5.4,22.5,12.412,Estavel,17.1,['Falha no sistema de comunicação', 'Falha no sistema de suporte à vida', 'Geração de energia baixa', 'Vento forte detectado']
+2025-03-11 13:02:00,1,1,1,1,1,1,133985.24,98,1807.5,-5.8,17.1,14.878,Estavel,8.6,['Geração de energia baixa', 'Nível de radiação elevado']
+2025-03-13 08:48:00,1,1,1,1,1,1,183856.74,28,2375.69,-14.9,27.1,6.698,Instavel,1.5,['Geração de energia baixa', 'Temperatura externa fora dos padrões', 'Sistema de comunicação instável']
+2025-03-16 15:32:00,1,1,1,1,1,1,128149.14,59,3145.08,-26.6,23.8,6.768,Instavel,11.2,['Temperatura externa fora dos padrões', 'Vento forte detectado', 'Sistema de comunicação instável']
+2025-03-17 23:41:00,1,1,1,0,1,1,107506.94,63,4137.72,-33.6,19.8,17.717,Instavel,14.1,['Falha no sistema de armazenamento', 'Temperatura externa fora dos padrões', 'Nível de radiação elevado', 'Vento forte detectado', 'Sistema de comunicação instável']
+2025-03-18 03:28:00,0,1,1,1,1,1,146084.44,20,2999.21,-3.1,23.6,16.242,Estavel,5.4,['Falha no sistema de comunicação', 'Nível de radiação elevado']
+2025-03-22 08:57:00,1,1,1,1,0,1,184203.86,71,1651.21,-17.2,23.9,1.676,Estavel,17.7,['Falha no sistema de energia', 'Geração de energia baixa', 'Temperatura externa fora dos padrões', 'Vento forte detectado']
+2025-03-29 19:31:00,1,0,1,1,1,0,113498.51,21,5015.24,32.9,20.1,2.957,Estavel,11.8,['Falha no sistema de habitação', 'Falha no sistema de suporte à vida', 'Vento forte detectado']
+2025-03-30 09:40:00,1,1,1,1,1,1,166439.29,73,2602.19,-20.5,19.4,0.494,Estavel,19.0,['Geração de energia baixa', 'Temperatura externa fora dos padrões', 'Vento forte detectado']
+2025-04-03 00:03:00,1,1,1,0,0,1,176647.57,12,2517.2,47.7,19.2,1.64,Estavel,6.6,['Falha no sistema de armazenamento', 'Falha no sistema de energia', 'Geração de energia baixa', 'Nível de energia crítica', 'Temperatura externa fora dos padrões']
+2025-04-07 18:04:00,0,1,1,1,1,0,165503.42,56,2199.44,-0.2,18.9,1.098,Estavel,19.7,['Falha no sistema de comunicação', 'Falha no sistema de suporte à vida', 'Geração de energia baixa', 'Vento forte detectado']
+2025-04-09 20:36:00,0,1,1,1,1,1,144613.03,32,3162.6,10.0,21.7,2.064,Estavel,17.8,['Falha no sistema de comunicação', 'Vento forte detectado']
+2025-04-15 00:20:00,1,1,1,1,0,1,170891.31,75,3757.53,-36.7,30.0,2.626,Estavel,0.4,['Falha no sistema de energia', 'Temperatura externa fora dos padrões']
+2025-04-16 03:22:00,1,1,1,0,1,1,119921.42,36,2972.39,-32.8,16.7,19.505,Estavel,11.9,['Falha no sistema de armazenamento', 'Temperatura externa fora dos padrões', 'Nível de radiação elevado', 'Vento forte detectado']
+2025-04-20 23:06:00,1,1,1,1,1,1,107251.14,25,4129.68,9.7,18.0,16.522,Instavel,14.5,['Nível de radiação elevado', 'Vento forte detectado', 'Sistema de comunicação instável']
+2025-04-27 18:48:00,1,1,1,1,1,0,209412.24,26,1210.74,20.9,28.9,5.937,Estavel,6.1,['Falha no sistema de suporte à vida', 'Geração de energia baixa']
+2025-05-01 05:11:00,1,1,1,1,1,1,148173.13,90,1883.48,-30.5,23.9,0.257,Estavel,20.0,['Geração de energia baixa', 'Temperatura externa fora dos padrões', 'Vento forte detectado']
+2025-05-02 05:53:00,1,0,1,0,1,1,156246.56,29,1411.27,22.3,20.8,14.32,Estavel,10.7,['Falha no sistema de habitação', 'Falha no sistema de armazenamento', 'Geração de energia baixa', 'Nível de radiação elevado', 'Vento forte detectado']
+2025-05-09 12:40:00,1,1,1,1,1,1,117661.35,76,3123.23,-23.9,21.1,16.184,Estavel,1.3,['Temperatura externa fora dos padrões', 'Nível de radiação elevado']
+2025-05-11 19:03:00,1,1,0,1,1,0,203863.59,96,4872.37,-31.3,24.0,6.632,Estavel,4.8,['Falha no sistema de laboratório', 'Falha no sistema de suporte à vida', 'Temperatura externa fora dos padrões']
+2025-05-13 16:20:00,1,1,0,1,1,1,191034.07,63,4918.74,-33.2,26.9,6.516,Estavel,10.7,['Falha no sistema de laboratório', 'Temperatura externa fora dos padrões', 'Vento forte detectado']
+2025-05-14 15:11:00,1,1,1,1,1,1,175908.7,51,3819.66,45.8,18.5,10.438,Estavel,1.8,['Temperatura externa fora dos padrões']
+2025-05-19 17:33:00,1,1,1,1,1,1,133135.75,9,3001.74,-1.5,24.5,13.699,Estavel,19.4,['Nível de energia crítica', 'Nível de radiação elevado', 'Vento forte detectado']
+2025-05-24 00:52:00,1,1,1,1,0,0,137887.96,89,4705.13,13.0,27.1,18.782,Estavel,12.9,['Falha no sistema de energia', 'Falha no sistema de suporte à vida', 'Nível de radiação elevado', 'Vento forte detectado']
+2025-05-30 09:22:00,1,1,1,0,1,1,186037.78,28,2410.58,48.6,25.9,17.515,Estavel,9.4,['Falha no sistema de armazenamento', 'Geração de energia baixa', 'Temperatura externa fora dos padrões', 'Nível de radiação elevado']
+2025-06-02 12:49:00,0,1,1,1,1,1,123812.49,82,1138.07,-35.6,22.1,12.539,Estavel,2.1,['Falha no sistema de comunicação', 'Geração de energia baixa', 'Temperatura externa fora dos padrões']
+2025-06-04 09:21:00,1,1,1,1,1,0,128813.58,57,2852.71,7.1,15.7,12.981,Estavel,0.5,['Falha no sistema de suporte à vida']
+2025-06-12 02:34:00,1,0,1,1,0,1,156937.25,37,4109.65,-12.2,29.2,14.697,Estavel,19.3,['Falha no sistema de habitação', 'Falha no sistema de energia', 'Temperatura externa fora dos padrões', 'Nível de radiação elevado', 'Vento forte detectado']
+2025-06-12 03:17:00,1,1,1,1,1,1,114163.94,39,3906.1,-40.5,19.4,15.427,Estavel,4.4,['Temperatura externa fora dos padrões', 'Nível de radiação elevado']
+2025-06-18 06:32:00,1,1,0,0,1,1,123424.7,82,1835.61,-38.4,28.1,16.011,Instavel,15.9,['Falha no sistema de laboratório', 'Falha no sistema de armazenamento', 'Geração de energia baixa', 'Temperatura externa fora dos padrões', 'Nível de radiação elevado', 'Vento forte detectado', 'Sistema de comunicação instável']
+2025-06-23 16:46:00,1,1,0,1,1,1,143888.01,28,2719.94,47.0,21.5,6.119,Instavel,14.1,['Falha no sistema de laboratório', 'Geração de energia baixa', 'Temperatura externa fora dos padrões', 'Vento forte detectado', 'Sistema de comunicação instável']
+2025-06-28 16:24:00,1,1,1,1,1,0,142482.71,3,1122.65,-20.8,19.6,8.367,Estavel,18.2,['Falha no sistema de suporte à vida', 'Geração de energia baixa', 'Nível de energia crítica', 'Temperatura externa fora dos padrões', 'Vento forte detectado']
+2025-07-01 20:49:00,1,0,1,1,1,1,127033.61,84,3154.02,1.8,16.3,11.113,Estavel,19.5,['Falha no sistema de habitação', 'Vento forte detectado']
+2025-07-04 04:20:00,1,1,1,0,0,1,139052.49,98,4306.61,-28.7,28.1,10.309,Estavel,1.2,['Falha no sistema de armazenamento', 'Falha no sistema de energia', 'Temperatura externa fora dos padrões']
+2025-07-04 23:40:00,1,1,1,1,1,1,135671.03,17,1207.35,35.3,16.7,15.92,Estavel,2.1,['Geração de energia baixa', 'Nível de energia crítica', 'Nível de radiação elevado']
+2025-07-05 07:49:00,1,0,1,0,1,1,212365.92,56,4081.21,39.2,15.2,19.921,Estavel,19.2,['Falha no sistema de habitação', 'Falha no sistema de armazenamento', 'Nível de radiação elevado', 'Vento forte detectado']
+2025-07-11 00:23:00,1,0,0,1,0,1,214255.62,29,1948.88,-39.4,18.4,6.291,Estavel,1.4,['Falha no sistema de habitação', 'Falha no sistema de laboratório', 'Falha no sistema de energia', 'Geração de energia baixa', 'Temperatura externa fora dos padrões']
+,,,,,,,,,,,,,,,
 ```
 
 **Saída (Exemplo de Execução no Terminal):**
 
 ```
 ============================================================
-          MISSION CONTROL CENTER TELEMETRY
+            MISSION CONTROL CENTER TELEMETRY             
 ============================================================
-HORÁRIO: 2026-05-31 10:05:00
+HORÁRIO: 2025-07-11 00:23:00
 STATUS GERAL: CRÍTICO
 DIAGNÓSTICO:  Risco imediato à integridade da missão.
 ------------------------------------------------------------
 [ ESTADO DOS MÓDULOS ]
- - Comunicacao    : ✗ FALHA DETECTADA
- - Habitacao      : ✓ OPERACIONAL
- - Laboratorio    : ✓ OPERACIONAL
+ - Comunicacao    : ✓ OPERACIONAL
+ - Habitacao      : ✗ FALHA DETECTADA
+ - Laboratorio    : ✗ FALHA DETECTADA
  - Armazenamento  : ✓ OPERACIONAL
- - Energia        : ✓ OPERACIONAL
+ - Energia        : ✗ FALHA DETECTADA
  - Suportevida    : ✓ OPERACIONAL
 
 [ LEITURAS DOS SENSORES (FAIXAS DE SEGURANÇA) ]
- - Energia Restante: 18% (Previsto: 19.0%)
- - Geração Energia:  2000 Kw/h
- - Nível Radiação:   15 mSv
- - Temp. Interna:    25°C
- - Temp. Externa:    7°C
- - Velocidade Vento: 10 m/s
- - Qualidade Com.:   Instavel
+ - Energia Restante: 29% (Previsto: 7.0%)
+ - Geração Energia:  1948.88 Kw/h
+ - Nível Radiação:   6.291 mSv
+ - Temp. Interna:    18.4°C
+ - Temp. Externa:    -39.4°C
+ - Velocidade Vento: 1.4 m/s
+ - Qualidade Com.:   Estavel
 
 [ RECOMENDAÇÕES AUTOMÁTICAS ]
  ➜ AÇÃO 1 (CRÍTICA): Manter suporte à vida e comunicação de emergência.
  ➜ AÇÃO 2 (ALTA): Desligar o laboratório e sistemas não essenciais.
 
 [ ALERTAS GERADOS PELO SISTEMA (PRIORIZADOS) ]
- ! FALHA NO MÓDULO: COMUNICACAO está inoperante!
- ! RADIAÇÃO: Níveis perigosos detectados
- ! ENERGIA CRÍTICA: Reserva abaixo de 20%
- ! TENDÊNCIA: Energia deve cair para 19.0%
+ ! FALHA NO MÓDULO: HABITACAO está inoperante!
+ ! FALHA NO MÓDULO: LABORATORIO está inoperante!
+ ! FALHA NO MÓDULO: ENERGIA está inoperante!
+ ! ENERGIA BAIXA: Reserva em nível de atenção
+ ! TENDÊNCIA: Energia deve cair para 7.0%
 
 [ LOGS DA BASE DE DADOS (HISTÓRICO) ]
- • Falha no Modulo de Comunicacao
- • Radiacao Elevada
- • Energia Critica
+ • Falha no sistema de habitação
+ • Falha no sistema de laboratório
+ • Falha no sistema de energia
+ • Geração de energia baixa
+ • Temperatura externa fora dos padrões
 
 [ ÚLTIMO EVENTO CRÍTICO (PILHA) ]
- ⚠ 2026-05-31 10:05:00 - FALHA NO MÓDULO: COMUNICACAO está inoperante!
+ ⚠ 2025-07-11 00:23:00 - FALHA NO MÓDULO: ENERGIA está inoperante!
 ============================================================
 ```
 
