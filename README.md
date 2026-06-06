@@ -219,7 +219,7 @@ As recomendações são geradas dinamicamente com base no status geral da missã
 
 ## Link do Vídeo no YouTube
 
-[Link para o vídeo de demonstração do projeto no YouTube]()
+[Link para o vídeo de demonstração do projeto no YouTube](https://youtu.be/3flZ-UcPAdw)
 
 ## Conclusões e Aprendizados
 
